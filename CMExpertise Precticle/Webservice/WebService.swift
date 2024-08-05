@@ -30,6 +30,7 @@ class WebService {
                 .tryMap { data,response in
                     let jsonDecoder = JSONDecoder()
                     let empData = try! jsonDecoder.decode(T.self, from: data)
+                    print("hello")
                     return empData
                 }
                 .eraseToAnyPublisher()
