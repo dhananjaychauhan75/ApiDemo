@@ -30,6 +30,7 @@ class WebService {
                 .tryMap { data,response in
                     let jsonDecoder = JSONDecoder()
                     let empData = try! jsonDecoder.decode(T.self, from: data)
+                    print("hello")
                     return empData
                 }
                 .eraseToAnyPublisher()
@@ -39,6 +40,7 @@ class WebService {
     func getDataWithWait<T:Decodable>(resModel:T.Type, url:String) async -> Result<T,ApiError> {
         guard let sourcesURL = URL(string: url) else {return .failure(.fail)}
         do {
+            print("hello ")
             let responce = try await URLSession.shared.data(from: sourcesURL)
                 let jsonDecoder = JSONDecoder()
             let empData = try! jsonDecoder.decode(T.self, from: responce.0)
