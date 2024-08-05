@@ -17,7 +17,6 @@ class WebService {
                 let empData = try! jsonDecoder.decode(T.self, from: data)
                 completion(.success(empData))
             } else {
-                print("hello")
                 completion(.failure(ApiError.fail))
             }
         }.resume()
