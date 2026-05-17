@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     //MARK: - lifecycle Method
     override func viewDidLoad() {
         super.viewDidLoad()
-        // observer for getiing data
+        // observer for getting data
         viewModel.$list.sink {[weak self] list in
             self?.refresData(data: list)
         }.store(in: &bag)
@@ -41,6 +41,8 @@ class ViewController: UIViewController {
     }
     
     func refresData(data: WeatherResModel?) {
+        // Reset arrData to avoid duplicates on each refresh
+        arrData.removeAll()
         for i in data?.list ?? [] {
             let date = i.dtTxt?.getDate() ?? ""
             if let index = self.arrData.firstIndex(where: {$0.date == date}) {
@@ -75,10 +77,8 @@ extension ViewController {
     
     func getDataWithAwait() {
         Task { @MainActor in
-            let result = await viewModel.getDataWithAwait()
-            if let data = result {
-                self.refresData(data: data)
-            }
+            // Result is published via viewModel.$list; no need to call refresData directly.
+            await viewModel.getDataWithAwait()
         }
     }
 }
