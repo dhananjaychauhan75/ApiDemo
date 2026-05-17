@@ -41,6 +41,7 @@ class ViewController: UIViewController {
     }
     
     func refresData(data: WeatherResModel?) {
+        arrData.removeAll()
         for i in data?.list ?? [] {
             let date = i.dtTxt?.getDate() ?? ""
             if let index = self.arrData.firstIndex(where: {$0.date == date}) {
@@ -75,10 +76,7 @@ extension ViewController {
     
     func getDataWithAwait() {
         Task { @MainActor in
-            let result = await viewModel.getDataWithAwait()
-            if let data = result {
-                self.refresData(data: data)
-            }
+            await viewModel.getDataWithAwait()
         }
     }
 }
