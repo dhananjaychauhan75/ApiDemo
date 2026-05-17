@@ -28,6 +28,12 @@ class WetherCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        arrData = nil
+        lblDate.text = nil
+    }
+    
     //MARK: - Custom Method
     func setUpData(){
         CollectionWether.dataSource = self
@@ -45,11 +51,19 @@ extension WetherCell : UICollectionViewDelegate, UICollectionViewDataSource, UIC
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DataCell", for: indexPath) as! DataCell
         cell.imgWether.image = UIImage(named: "loading")
-        cell.lblTime.text = arrData?[indexPath.row].dtTxt?.getTime() ?? ""
-        cell.lblCount.text = arrData?[indexPath.row].main?.temp?.getCelcius()
-        if let url = URL(string: "https://openweathermap.org/img/wn/\(arrData?[indexPath.row].weather?.first?.icon ?? "").png") {
+        
+        guard let itemData = arrData?[indexPath.row] else {
+            return cell
+        }
+        
+        cell.lblTime.text = itemData.dtTxt?.getTime() ?? ""
+        cell.lblCount.text = itemData.main?.temp?.getCelcius() ?? "--"
+        
+        if let iconCode = itemData.weather?.first?.icon,
+           let url = URL(string: "https://openweathermap.org/img/wn/\(iconCode).png") {
             cell.imgWether.load(url: url)
         }
+        
         return cell
     }
     
