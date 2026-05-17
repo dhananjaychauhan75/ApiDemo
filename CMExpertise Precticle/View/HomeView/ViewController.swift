@@ -41,6 +41,9 @@ class ViewController: UIViewController {
     }
     
     func refresData(data: WeatherResModel?) {
+        // Clear previous data to prevent duplicates and memory leaks
+        arrData.removeAll()
+        
         for i in data?.list ?? [] {
             let date = i.dtTxt?.getDate() ?? ""
             if let index = self.arrData.firstIndex(where: {$0.date == date}) {
@@ -49,7 +52,7 @@ class ViewController: UIViewController {
                 self.arrData.append(WData(date: date, data: [i]))
             }
         }
-        print("total data found = ",self.arrData.count)
+        print("total data found = ", self.arrData.count)
         DispatchQueue.main.async {
             self.tblWeather.reloadData()
         }
@@ -84,7 +87,7 @@ extension ViewController {
 }
 
 //MARK: - TableView DataSourse and delegate
-extension ViewController : UITableViewDataSource,UITableViewDelegate {
+extension ViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arrData.count
     }
