@@ -23,8 +23,13 @@ class ViewController: UIViewController {
     var bag = Set<AnyCancellable>()
     
     //MARK: - lifecycle Method
+    /// Called after the view has been loaded into memory.
+    /// Sets the navigation title to "My Weather Data", subscribes to the
+    /// view-model's published `list` property, and triggers the initial
+    /// data fetch.
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "My Weather Data"
         // observer for getiing data
         viewModel.$list.sink {[weak self] list in
             self?.refresData(data: list)
