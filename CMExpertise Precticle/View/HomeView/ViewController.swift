@@ -23,8 +23,12 @@ class ViewController: UIViewController {
     var bag = Set<AnyCancellable>()
     
     //MARK: - lifecycle Method
+    /// Called after the controller's view is loaded into memory.
+    /// Sets the navigation title, configures the Combine observer for weather list updates,
+    /// and triggers initial data setup.
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "My Weather Data"
         // observer for getiing data
         viewModel.$list.sink {[weak self] list in
             self?.refresData(data: list)
