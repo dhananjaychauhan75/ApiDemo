@@ -33,14 +33,32 @@ class ViewController: UIViewController {
     }
 
     //MARK: - Custom Method
+
+    /**
+     Sets up the initial data sources and triggers the data fetch.
+
+     Configures the table view and initiates the async weather data fetch.
+     */
     func setUpData() {
         setTableView()
 //        getWeatherData()
 //        getDataWithCodeble()
         getDataWithAwait()
     }
-    
+
+    /**
+     Refreshes the table view data from the given weather response model.
+
+     Clears any previously stored data before repopulating `arrData` so that
+     stale or duplicate entries are never shown. Groups each `List` item by
+     its date string and reloads the table view on the main thread.
+
+     - Parameter data: The `WeatherResModel` returned from the API, or `nil`
+       if no data is available (in which case the table is cleared).
+     */
     func refresData(data: WeatherResModel?) {
+        // Reset arrData to prevent duplicate/stale entries on every refresh.
+        self.arrData.removeAll()
         for i in data?.list ?? [] {
             let date = i.dtTxt?.getDate() ?? ""
             if let index = self.arrData.firstIndex(where: {$0.date == date}) {
@@ -54,7 +72,10 @@ class ViewController: UIViewController {
             self.tblWeather.reloadData()
         }
     }
-    
+
+    /**
+     Configures the table view's data source and delegate to this view controller.
+     */
     func setTableView() {
         tblWeather.dataSource = self
         tblWeather.delegate = self
@@ -73,12 +94,19 @@ extension ViewController {
         viewModel.callWebServiceToGetData()
     }
     
+    /**
+     Fetches weather data asynchronously using Swift Concurrency (`async/await`).
+
+     The result is published via `viewModel.$list`, which is observed by the
+     Combine sink set up in `viewDidLoad`. The sink calls `refresData(data:)`
+     automatically, so this method does **not** call it directly — doing so
+     would cause each item to be appended twice.
+     */
     func getDataWithAwait() {
         Task { @MainActor in
-            let result = await viewModel.getDataWithAwait()
-            if let data = result {
-                self.refresData(data: data)
-            }
+            // Result is published through viewModel.$list;
+            // the Combine sink in viewDidLoad handles the UI refresh.
+            _ = await viewModel.getDataWithAwait()
         }
     }
 }
